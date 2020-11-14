@@ -3,18 +3,20 @@ from tweepy import OAuthHandler
 from tweepy import Cursor
 import numpy as np
 import pandas as pd
+from time import sleep
 import twitter_credentials
 import tweepy
 import json
+from notify_run import Notify
 
 auth = OAuthHandler(twitter_credentials.CONSUMER_KEY, twitter_credentials.CONSUMER_SECRET)
 auth.set_access_token(twitter_credentials.ACCESS_TOKEN, twitter_credentials.ACCESS_TOKEN_SECRET)
 api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)  # YIKES so twitter doesnt ban me
 
-search_terms1 = ['Nike', 'Adidas', 'Netflix', 'Amazon', 'Starbucks', 'Apple', 'Dell', 'Ford', 'Ubisoft', 'Riot Games',
-                 'Sony', 'EasyJet', 'Nintendo']
-search_terms2 = ['Microsoft', 'Playstation', 'Disney', 'Xbox', 'Guardian', 'Ikea', 'EA', 'RockstarGames', 'Samsung',
-                 'Konami', 'FedEx', 'AIG']
+search_terms1 = ['Nike', 'Adidas', 'Netflix', 'Amazon', 'Starbucks', 'Apple', 'Dell', 'Ford', 'Ubisoft', 'Nintendo',
+                 'Sony', 'EasyJet', 'Pfizer']
+search_terms2 = ['Microsoft', 'Disney', 'Guardian', 'EA', 'Samsung',
+                 'FedEx', 'AIG', 'Activision']
 
 
 def stream_tweets(search_term):
@@ -42,11 +44,17 @@ def stream_tweets(search_term):
 
 
 if __name__ == "__main__":
+    notify = Notify()
+    notify.send('Starting stream')
     print('Starting to stream...')
     counter = 0
-
-    while counter != -10:  # Infinite loop
-        for search_term in search_terms1:
-            stream_tweets(search_term)
-            print('finished!')
-            counter += 1
+    try:
+        while counter != 10:  # Infinite loop
+            for search_term in search_terms1:
+                stream_tweets(search_term)
+                print('finished!')
+                counter += 1
+    except:
+        notify.send('Eoghan your twitter scraping program has failed')  # Send me an android notification
+    finally:
+        notify.send('Eoghan your twitter scraping program has finally failed')  # Send me an android notification
